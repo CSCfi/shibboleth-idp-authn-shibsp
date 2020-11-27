@@ -63,13 +63,15 @@ public class ShibbolethSpAuthnServletTest extends BaseAuthenticationContextTest 
         flowExecutionUrl = "http://localhost/mock";
         final AuthenticationContext authnContext = prc.getSubcontext(AuthenticationContext.class, false);
         authnContext.setAttemptedFlow(authenticationFlows.get(0));
-        final ExternalAuthenticationContext extContext = authnContext.getSubcontext(ExternalAuthenticationContext.class, true);
+        final ExternalAuthenticationContext extContext = new ExternalAuthenticationContext(new ExternalAuthenticationImpl(false));
         extContext.setFlowExecutionUrl(flowExecutionUrl);
+        authnContext.addSubcontext(extContext);
     }
     
     @Test
     public void testEmptyRequest() throws Exception {
         final MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+        servletRequest.getServletContext().setAttribute("net.shibboleth.idp.flowExecutor", prc);
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         servlet.doGet(servletRequest, servletResponse);
         Assert.assertNull(servletResponse.getRedirectedUrl());
@@ -136,8 +138,9 @@ public class ShibbolethSpAuthnServletTest extends BaseAuthenticationContextTest 
         final MockHttpServletRequest servletRequest = new MockHttpServletRequest();
         final MockHttpSession session = new MockHttpSession();
         servletRequest.setParameter(ExternalAuthentication.CONVERSATION_KEY, conversationKey);
-        session.setAttribute(ExternalAuthentication.CONVERSATION_KEY + conversationKey, new ExternalAuthenticationImpl(prc));
+        session.setAttribute(ExternalAuthentication.CONVERSATION_KEY + conversationKey, new ExternalAuthenticationImpl(false));
         servletRequest.setSession(session);
+        servletRequest.getServletContext().setAttribute("net.shibboleth.idp.flowExecutor", prc);
         return servletRequest;
     }
 }

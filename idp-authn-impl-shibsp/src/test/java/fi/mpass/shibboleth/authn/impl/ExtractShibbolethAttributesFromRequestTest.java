@@ -27,6 +27,7 @@ import net.shibboleth.idp.authn.AuthnEventIds;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
 import net.shibboleth.idp.authn.context.ExternalAuthenticationContext;
 import net.shibboleth.idp.authn.impl.BaseAuthenticationContextTest;
+import net.shibboleth.idp.authn.impl.ExternalAuthenticationImpl;
 import net.shibboleth.idp.profile.ActionTestingSupport;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 
@@ -224,7 +225,7 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
     public void testExternalNoSubject() throws ComponentInitializationException {
         action = initAction(true);
         final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class, false);
-        authCtx.getSubcontext(ExternalAuthenticationContext.class, true);
+        authCtx.addSubcontext(new ExternalAuthenticationContext(new ExternalAuthenticationImpl(false)));
         final Event event = action.execute(src);
         ActionTestingSupport.assertEvent(event, AuthnEventIds.NO_CREDENTIALS);
     }
@@ -237,8 +238,9 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
     public void testExternalEmptySubject() throws ComponentInitializationException {
         action = initAction(true);
         final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class, false);
-        final ExternalAuthenticationContext extCtx = authCtx.getSubcontext(ExternalAuthenticationContext.class, true);
+        final ExternalAuthenticationContext extCtx = new ExternalAuthenticationContext(new ExternalAuthenticationImpl(false));
         extCtx.setSubject(new Subject());
+        authCtx.addSubcontext(extCtx);
         final Event event = action.execute(src);
         Assert.assertNull(event);
         Assert.assertEquals(authCtx.getSubcontext(ShibbolethSpAuthenticationContext.class).getHeaders().size(), 0);
@@ -252,12 +254,13 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
     public void testExternalSuccess() throws ComponentInitializationException {
         action = initAction(true);
         final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class, false);
-        final ExternalAuthenticationContext extCtx = authCtx.getSubcontext(ExternalAuthenticationContext.class, true);
+        final ExternalAuthenticationContext extCtx = new ExternalAuthenticationContext(new ExternalAuthenticationImpl(false));
         final String headerName = "mockName";
         final String headerValue = "mockValue";
         final Subject subject = new Subject();
         subject.getPrincipals().add(new ShibHeaderPrincipal(headerName, headerValue));
         extCtx.setSubject(subject);
+        authCtx.addSubcontext(extCtx);
         final Event event = action.execute(src);
         Assert.assertNull(event);
         final Map<String, String> headers = authCtx.getSubcontext(ShibbolethSpAuthenticationContext.class).getHeaders();

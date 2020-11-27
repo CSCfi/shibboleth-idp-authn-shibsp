@@ -55,7 +55,6 @@ import fi.mpass.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
  * @pre <pre>ProfileRequestContext.getSubcontext(AuthenticationContext.class, false) != null</pre>
  * @post If getHttpServletRequest() != null, HTTP headers and request attributes with String values are
  * extracted to populate a {@link ShibbolethSpAuthenticationContext}. */
-@SuppressWarnings("rawtypes")
 public class ExtractShibbolethAttributesFromRequest extends AbstractExtractionAction {
 
     /** Class logger. */
@@ -194,7 +193,7 @@ public class ExtractShibbolethAttributesFromRequest extends AbstractExtractionAc
     }
     
     /**
-     * Updates the given {@link ShibbolethContext} with given parameters.
+     * Updates the given {@link ShibbolethSpAuthenticationContext} with given parameters.
      * @param shibbolethContext The Shibboleth context.
      * @param name The name of the variable to be updated.
      * @param value The value of the variable to be updated.

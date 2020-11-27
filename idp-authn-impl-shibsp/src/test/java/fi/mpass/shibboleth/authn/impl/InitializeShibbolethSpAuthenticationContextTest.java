@@ -45,8 +45,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Functions;
-
 import fi.mpass.shibboleth.authn.context.ShibbolethSpAuthenticationContext;
 import fi.mpass.shibboleth.authn.impl.InitializeShibbolethSpAuthenticationContext;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
@@ -118,7 +116,7 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
     public void testNoMappingsNoRequest() throws ComponentInitializationException {
         action = new InitializeShibbolethSpAuthenticationContext();
         action.setRelyingPartyContextLookupStrategy(new ChildContextLookup<ProfileRequestContext, RelyingPartyContext>(RelyingPartyContext.class));
-        action.setAuthnRequestLookupStrategy(Functions.compose(new MessageLookup<>(AuthnRequest.class), new InboundMessageContextLookup()));
+        action.setAuthnRequestLookupStrategy(new MessageLookup<>(AuthnRequest.class).compose(new InboundMessageContextLookup()));
         action.initialize();
         Assert.assertNull(action.execute(src));
     }

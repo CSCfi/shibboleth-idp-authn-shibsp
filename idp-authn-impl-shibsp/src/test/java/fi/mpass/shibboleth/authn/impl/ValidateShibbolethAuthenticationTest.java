@@ -24,7 +24,6 @@ package fi.mpass.shibboleth.authn.impl;
 
 import javax.security.auth.Subject;
 
-import org.opensaml.profile.action.EventIds;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.webflow.execution.Event;
 import org.testng.Assert;
@@ -79,7 +78,7 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
      */
     @Test public void testMissingFlow() {
         final Event event = action.execute(src);
-        ActionTestingSupport.assertEvent(event, EventIds.INVALID_PROFILE_CTX);
+        ActionTestingSupport.assertEvent(event, AuthnEventIds.INVALID_AUTHN_CTX);
     }
     
     /**
