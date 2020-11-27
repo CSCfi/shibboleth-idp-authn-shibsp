@@ -194,7 +194,7 @@ After enabling the serializers, you're able to read the corresponding principals
         <ad:Script><![CDATA[
           authnContext = resolutionContext.getParent().getSubcontext("net.shibboleth.idp.authn.context.AuthenticationContext");
           subject = authnContext.getAuthenticationResult().getSubject();
-          principals = subject.getPrincipals(Java.type("fi.mpass.shibboleth.authn.principal.impl.ShibAttributePrincipal").class);
+          principals = subject.getPrincipals(Java.type("fi.csc.shibboleth.authn.principal.impl.ShibAttributePrincipal").class);
           iterator = principals.iterator();
           while (iterator.hasNext()) {
               principal = iterator.next();
