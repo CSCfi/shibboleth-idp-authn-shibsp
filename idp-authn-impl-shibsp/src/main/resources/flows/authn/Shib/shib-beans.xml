@@ -37,12 +37,12 @@ THE SOFTWARE.
    <import resource="../../../conf/authn/shib-authn-config.xml" />
 
    <bean id="ValidateShibbolethAuthentication"
-            class="fi.mpass.shibboleth.authn.impl.ValidateShibbolethAuthentication" scope="prototype"
+            class="fi.csc.shibboleth.authn.impl.ValidateShibbolethAuthentication" scope="prototype"
             p:classifiedMessages-ref="shibboleth.authn.Shib.ClassifiedMessageMap"
             p:resultCachingPredicate="#{getObject('shibboleth.authn.Shib.resultCachingPredicate')}"
             p:usernameAttribute="%{idp.authn.shibsp.usernameAttribute:eppn}" p:populateHeaders="%{idp.authn.shibsp.populateHeaders:true}" p:populateAttributes="%{idp.authn.shibsp.populateAttributes:true}" />
 
-    <bean id="ExtractShibbolethHeadersFromRequest" class="fi.mpass.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest" scope="prototype"
+    <bean id="ExtractShibbolethHeadersFromRequest" class="fi.csc.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest" scope="prototype"
         p:httpServletRequest-ref="shibboleth.HttpServletRequest"
         p:trim="true" p:attributeNames-ref="attributeNames">
        <constructor-arg type="String" value="AJP_"/>
@@ -52,7 +52,7 @@ THE SOFTWARE.
         <value>eppn</value>
     </util:list>
 
-    <bean id="ExtractShibbolethPrincipals" class="fi.mpass.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest" scope="prototype"
+    <bean id="ExtractShibbolethPrincipals" class="fi.csc.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest" scope="prototype"
         p:httpServletRequest-ref="shibboleth.HttpServletRequest"
         p:trim="true" p:exploitExternal="true">
        <constructor-arg type="String" value="AJP_"/>

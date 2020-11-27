@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-    <logger name="fi.mpass" level="TRACE"/>
+    <logger name="fi.csc" level="TRACE"/>
     <logger name="net.shibboleth.idp.attribute.resolver.spring" level="TRACE"/>
     <logger name="net.shibboleth.idp.attribute.resolver" level="DEBUG"/>
     <logger name="net.shibboleth.ext.spring" level="DEBUG"/>

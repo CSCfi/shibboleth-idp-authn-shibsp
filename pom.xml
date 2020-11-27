@@ -28,7 +28,7 @@ THE SOFTWARE.
         <artifactId>idp-parent</artifactId>
         <version>4.0.0</version>
     </parent>
-    <groupId>fi.mpass</groupId>
+    <groupId>fi.csc.shibboleth</groupId>
     <artifactId>idp-authn-shibsp</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -43,7 +43,7 @@ THE SOFTWARE.
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <shib.idp.version>4.0.0</shib.idp.version>
-        <checkstyle.configLocation>mpassid-checkstyle.xml</checkstyle.configLocation>
+        <checkstyle.configLocation>checkstyle.xml</checkstyle.configLocation>
     </properties>
 
     <repositories>
@@ -72,9 +72,9 @@ THE SOFTWARE.
     </licenses>
 
     <scm>
-        <url>https://github.com/Digipalvelutehdas/MPASSid-proxy</url>
-        <connection>scm:git:git://github.com/Digipalvelutehdas/MPASSid-proxy.git</connection>
-        <developerConnection>scm:git:https://github.com/Digipalvelutehdas/MPASSid-proxy</developerConnection>
+        <url>https://github.com/CSCfi/shibboleth-idp-authn-shibsp</url>
+        <connection>scm:git:git://github.com/CSCfi/shibboleth-idp-authn-shibsp.git</connection>
+        <developerConnection>scm:git:https://github.com/CSCfi/shibboleth-idp-authn-shibsp</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -82,7 +82,7 @@ THE SOFTWARE.
         <dependencies>
             <!-- Compile Dependencies -->
             <dependency>
-                <groupId>fi.mpass</groupId>
+                <groupId>fi.csc.shibboleth</groupId>
                 <artifactId>idp-authn-api-shibsp</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -94,7 +94,7 @@ The example above assumes that you have a bean called _shibboleth.authn.ShibExte
 _/opt/shibboleth-idp/conf/authn/shib-authn-config.xml_. The bean must contain the desired
 [Shibboleth SP Handler](https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPHandler) location and its parameters. Also, a bean
 called _shibboleth.authn.ShibExternal.externalAuthServlet_ must be configured in the same file, and it must correspond to the location
-of the _fi.mpass.shibboleth.authn.impl.ShibbolethSpAuthnServlet_ servlet.
+of the _fi.csc.shibboleth.authn.impl.ShibbolethSpAuthnServlet_ servlet.
 
 ```
 ...
@@ -113,7 +113,7 @@ The servlet is configured in the *web.xml* (usually _/opt/shibboleth-idp/edit-we
 ...
     <servlet>
         <servlet-name>ShibbolethSpAuthnServlet</servlet-name>
-        <servlet-class>fi.mpass.shibboleth.authn.impl.ShibbolethSpAuthnServlet</servlet-class>
+        <servlet-class>fi.csc.shibboleth.authn.impl.ShibbolethSpAuthnServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet-mapping>
@@ -148,7 +148,7 @@ The example above enables population of both attributes and headers:
 
 ```
    <bean id="ValidateShibbolethAuthentication"
-            class="fi.mpass.shibboleth.authn.impl.ValidateShibbolethAuthentication" scope="prototype"
+            class="fi.csc.shibboleth.authn.impl.ValidateShibbolethAuthentication" scope="prototype"
             p:classifiedMessages-ref="shibboleth.authn.Shib.ClassifiedMessageMap"
             p:resultCachingPredicate="#{getObject('shibboleth.authn.Shib.resultCachingPredicate')}"
             p:usernameAttribute="eppn" p:populateHeaders="true" p:populateAttributes="true" />
@@ -158,8 +158,8 @@ The example above enables population of both attributes and headers:
 
 In order to serialize the Shibboleth attributes and/or headers, the following serializers need to be added into _shibboleth.PrincipalSerializers_ list in _opt/shibboleth-idp/conf/global.xml_: 
 
-* _fi.mpass.shibboleth.authn.principal.impl.ShibAttributePrincipalSerializer_ for attributes
-* _fi.mpass.shibboleth.authn.principal.impl.ShibHeaderPrincipalSerializer_ for headers
+* _fi.csc.shibboleth.authn.principal.impl.ShibAttributePrincipalSerializer_ for attributes
+* _fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipalSerializer_ for headers
 
 The example below enables serialization of both attributes and headers. The other serializers are the same ones that are defined in the _/opt/shibboleth-idp/system/conf/general-authn-system.xml_ (see bean _shibboleth.DefaultPrincipalSerializers_).
 
@@ -168,14 +168,16 @@ The example below enables serialization of both attributes and headers. The othe
         class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
         <list>
-            <bean class="fi.mpass.shibboleth.authn.principal.impl.ShibAttributePrincipalSerializer" />
-            <bean class="fi.mpass.shibboleth.authn.principal.impl.ShibHeaderPrincipalSerializer" />
+            <bean class="fi.csc.shibboleth.authn.principal.impl.ShibAttributePrincipalSerializer" />
+            <bean class="fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipalSerializer" />
             <bean class="net.shibboleth.idp.authn.principal.impl.UsernamePrincipalSerializer" />
             <bean class="net.shibboleth.idp.authn.principal.impl.LDAPPrincipalSerializer" />
             <bean class="net.shibboleth.idp.authn.duo.impl.DuoPrincipalSerializer" />
             <bean class="net.shibboleth.idp.authn.principal.impl.IdPAttributePrincipalSerializer" />
             <bean class="net.shibboleth.idp.authn.principal.impl.PasswordPrincipalSerializer"
-                p:dataSealer="#{'%{idp.sealer.storeResource:}'.trim().length() > 0 ? getObject('shibboleth.DataSealer') : null}" />
+                p:dataSealer="#{(systemProperties.contains('idp.sealer.storeResource') or systemProperties.contains('idp.sealer.keyStrategy')) ? getObject('shibboleth.DataSealer') : null}" />
+            <bean class="net.shibboleth.idp.authn.principal.impl.ProxyAuthenticationPrincipalSerializer" />
+            <bean class="net.shibboleth.idp.saml.authn.principal.impl.NameIDPrincipalSerializer" depends-on="shibboleth.OpenSAMLConfig" />
         </list>
      </property>
 </bean>

@@ -41,7 +41,7 @@ THE SOFTWARE.
     <bean id="shibboleth.authn.ShibExternal.externalHandler" class="java.lang.String"
         c:_0="https://example.org/override/Shibboleth.sso/Login?entityID=https://example.org/idp/shibboleth" />
 
-    <!-- This endpoint must be configured in web.xml for fi.mpass.shibboleth.authn.impl.ShibbolethSpAuthnServlet -->
+    <!-- This endpoint must be configured for fi.csc.shibboleth.authn.impl.ShibbolethSpAuthnServlet -->
     <!-- It must also be protected by the SP handler configured in the externalHandler bean above -->
     <bean id="shibboleth.authn.ShibExternal.externalAuthServlet" class="java.lang.String"
         c:_0="https://example.org/idp/Authn/ShibExternal" />

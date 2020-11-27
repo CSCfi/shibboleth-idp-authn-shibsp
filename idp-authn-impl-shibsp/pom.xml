@@ -23,7 +23,7 @@ THE SOFTWARE.
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>fi.mpass</groupId>
+        <groupId>fi.csc.shibboleth</groupId>
         <artifactId>idp-authn-shibsp</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
@@ -32,7 +32,7 @@ THE SOFTWARE.
     <packaging>jar</packaging>
 
     <properties>
-        <automatic.module.name>fi.mpassid.authn.shibsp.impl</automatic.module.name>
+        <automatic.module.name>fi.csc.authn.shibsp.impl</automatic.module.name>
     </properties>
 
     <repositories>
@@ -63,7 +63,7 @@ THE SOFTWARE.
     <dependencies>
         <!-- Compile Dependencies -->
         <dependency>
-            <groupId>fi.mpass</groupId>
+            <groupId>fi.csc.shibboleth</groupId>
             <artifactId>idp-authn-api-shibsp</artifactId>
         </dependency>
         <dependency>
@@ -213,7 +213,7 @@ THE SOFTWARE.
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeGroupIds>fi.mpass</includeGroupIds>
+                            <includeGroupIds>fi.csc.shibboleth</includeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
