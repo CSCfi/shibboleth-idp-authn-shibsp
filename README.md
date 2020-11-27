@@ -1,7 +1,7 @@
 # Shibboleth IdP v3: Shibboleth SP authentication
 
 [![License](http://img.shields.io/:license-mit-blue.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://travis-ci.org/mpassid/shibboleth-idp-authn-shibsp.svg?branch=master)](https://travis-ci.org/mpassid/shibboleth-idp-authn-shibsp)
+[![Build Status](https://travis-ci.org/CSCfi/shibboleth-idp-authn-shibsp.svg?branch=master)](https://travis-ci.org/CSCfi/shibboleth-idp-authn-shibsp)
 
 ## Overview
 
