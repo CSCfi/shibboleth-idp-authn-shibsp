@@ -8,7 +8,7 @@
 This module implements an authentication flow for [Shibboleth Identity Provider v4](https://wiki.shibboleth.net/confluence/display/IDP4/Home) exploiting attributes provided by [Shibboleth Service Provider](https://shibboleth.net/products/service-provider.html). The module can be used for outsourcing the authentication to another SAML IdP instead of prompting and validating the user
 credentials itself.
 
-NOTE! The IdP v4 natively supports [SAML authentication](https://wiki.shibboleth.net/confluence/display/IDP4/SAMLAuthnConfiguration), with many additional features compared to this plugin.
+NOTE! The IdP v4 natively supports [SAML authentication](https://wiki.shibboleth.net/confluence/display/IDP4/SAMLAuthnConfiguration), with many additional features compared to this plugin. The main purpose of this plugin is to serve in smooth transition to V4 for the existing IdP v3 deployments.
 
 ## Prerequisities and compilation
 
