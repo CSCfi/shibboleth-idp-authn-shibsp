@@ -2,7 +2,6 @@
 
 [![License](http://img.shields.io/:license-mit-blue.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.org/mpassid/shibboleth-idp-authn-shibsp.svg?branch=master)](https://travis-ci.org/mpassid/shibboleth-idp-authn-shibsp)
-[![Coverage Status](https://coveralls.io/repos/github/mpassid/shibboleth-idp-authn-shibsp/badge.svg?branch=master)](https://coveralls.io/github/mpassid/shibboleth-idp-authn-shibsp?branch=master)
 
 ## Overview
 
