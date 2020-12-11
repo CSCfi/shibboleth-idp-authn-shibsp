@@ -36,6 +36,11 @@ THE SOFTWARE.
        
    <import resource="../../../conf/authn/shib-authn-config.xml" />
 
+   <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" p:placeholderPrefix="%{"p:placeholderSuffix="}" />
+
+   <bean class="net.shibboleth.ext.spring.config.IdentifiableBeanPostProcessor" />
+   <bean class="net.shibboleth.idp.profile.impl.ProfileActionBeanPostProcessor" />
+
    <bean id="ValidateShibbolethAuthentication"
             class="fi.csc.shibboleth.authn.impl.ValidateShibbolethAuthentication" scope="prototype"
             p:classifiedMessages-ref="shibboleth.authn.Shib.ClassifiedMessageMap"
