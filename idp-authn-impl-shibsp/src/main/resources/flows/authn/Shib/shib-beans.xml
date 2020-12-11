@@ -36,7 +36,7 @@ THE SOFTWARE.
        
    <import resource="../../../conf/authn/shib-authn-config.xml" />
 
-   <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" p:placeholderPrefix="%{"p:placeholderSuffix="}" />
+   <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" p:placeholderPrefix="%{" p:placeholderSuffix="}" />
 
    <bean class="net.shibboleth.ext.spring.config.IdentifiableBeanPostProcessor" />
    <bean class="net.shibboleth.idp.profile.impl.ProfileActionBeanPostProcessor" />
