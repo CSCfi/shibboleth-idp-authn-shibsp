@@ -30,9 +30,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.google.common.base.Predicates;
+
 import fi.csc.shibboleth.authn.context.ShibbolethSpAuthenticationContext;
-import fi.csc.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest;
-import fi.csc.shibboleth.authn.impl.ValidateShibbolethAuthentication;
 import fi.csc.shibboleth.authn.principal.impl.ShibAttributePrincipal;
 import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
 import net.shibboleth.idp.authn.AuthnEventIds;
@@ -100,6 +100,26 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         Assert.assertNotNull(shibContext);
         final Event event = action.execute(src);
         ActionTestingSupport.assertEvent(event, AuthnEventIds.NO_CREDENTIALS);
+    }
+    
+    /**
+     * Runs action with authentication acceptable predicate set to always return false.
+     */
+    @Test public void testFailingAcceptablePredicate() throws Exception{
+        action = new ValidateShibbolethAuthentication();
+        action.setUsernameAttribute(uid);
+        action.setPopulateAttributes(true);
+        action.setPopulateHeaders(true);
+        action.setAuthenticationAcceptablePredicate(Predicates.alwaysFalse());
+        action.initialize();
+        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class, false);
+        ac.setAttemptedFlow(authenticationFlows.get(0));
+        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class, false)
+                .getSubcontext(ShibbolethSpAuthenticationContext.class, true);
+        Assert.assertNotNull(shibContext);
+        shibContext.getAttributes().put(uid, uidValue);
+        final Event event = action.execute(src);
+        ActionTestingSupport.assertEvent(event, AuthnEventIds.INVALID_CREDENTIALS);        
     }
     
     /**

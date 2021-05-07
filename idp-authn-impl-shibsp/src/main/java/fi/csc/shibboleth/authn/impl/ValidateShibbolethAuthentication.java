@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,7 +48,10 @@ import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicates;
+
 import fi.csc.shibboleth.authn.context.ShibbolethSpAuthenticationContext;
+import fi.csc.shibboleth.authn.principal.impl.KeyValuePrincipal;
 import fi.csc.shibboleth.authn.principal.impl.ShibAttributePrincipal;
 import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
 
@@ -67,7 +71,6 @@ import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
  * {@link AbstractValidationAction#handleError(ProfileRequestContext, AuthenticationContext, Exception, String)}
  * method is called.
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class ValidateShibbolethAuthentication extends AbstractValidationAction {
 
     /** The delimeter if multiple usernameAttributes set. */
@@ -87,6 +90,17 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
     
     /** Switch to populate Subject with header principals. */
     private boolean populateHeaders;
+    
+    /** Whether the authentication result is acceptable by external evaluation, usually a script. */
+    @Nonnull
+    private Predicate<ProfileRequestContext> authenticationAcceptablePredicate;
+    
+    /**
+     * Constructor.
+     */
+    public ValidateShibbolethAuthentication() {
+        authenticationAcceptablePredicate = Predicates.alwaysTrue();
+    }
     
     /**
      * Get the attribute name containing the user identifier.
@@ -123,6 +137,16 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
         populateHeaders = headers;
     }
     
+    /**
+     * Set condition to determine whether the authentication result is acceptable.
+     *
+     * @param condition condition to apply
+     */
+    public void setAuthenticationAcceptablePredicate(@Nonnull final Predicate<ProfileRequestContext> condition) {
+        authenticationAcceptablePredicate =
+                Constraint.isNotNull(condition, "Authentication acceptable condition cannot be null");
+    }
+    
     /** {@inheritDoc} */
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext,
@@ -157,7 +181,15 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
                     AuthnEventIds.NO_CREDENTIALS);
             return;
         }
-        buildAuthenticationResult(profileRequestContext, authenticationContext);
+        if (authenticationAcceptablePredicate.test(profileRequestContext)) {
+            buildAuthenticationResult(profileRequestContext, authenticationContext);
+        } else {
+            log.warn("{} The authentication acceptable predicate returned false, authentication is not accepted",
+                    getLogPrefix());
+            handleError(profileRequestContext, authenticationContext, AuthnEventIds.INVALID_CREDENTIALS,
+                    AuthnEventIds.INVALID_CREDENTIALS);
+            return;
+        }
     }    
     
     /**
