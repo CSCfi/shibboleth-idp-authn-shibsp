@@ -49,12 +49,11 @@ import net.shibboleth.idp.authn.AbstractAuthenticationAction;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
 import net.shibboleth.idp.profile.ActionSupport;
 import net.shibboleth.idp.profile.IdPEventIds;
-import net.shibboleth.idp.profile.context.RelyingPartyContext;
+import net.shibboleth.profile.context.RelyingPartyContext;
 import net.shibboleth.idp.saml.authn.principal.AuthnContextClassRefPrincipal;
 import net.shibboleth.idp.saml.authn.principal.AuthnContextDeclRefPrincipal;
-import net.shibboleth.utilities.java.support.component.ComponentSupport;
-import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.StringSupport;
+import net.shibboleth.shared.logic.Constraint;
+import net.shibboleth.shared.primitive.StringSupport;
 
 /**
  * An action that creates an {@link ShibbolethSpAuthenticationContext} and attaches it to {@link AuthenticationContext}.
@@ -63,7 +62,6 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
  * @event {@link EventIds#INVALID_PROFILE_CTX}
  * @event {@link IdPEventIds#INVALID_RELYING_PARTY_CTX}
  */
-@SuppressWarnings("rawtypes")
 public class InitializeShibbolethSpAuthenticationContext extends AbstractAuthenticationAction {
 
     /** Class logger. */
@@ -112,7 +110,7 @@ public class InitializeShibbolethSpAuthenticationContext extends AbstractAuthent
      */
     public void setRelyingPartyContextLookupStrategy(
             @Nonnull final Function<ProfileRequestContext, RelyingPartyContext> strategy) {
-        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        ifInitializedThrowUnmodifiabledComponentException();
         relyingPartyContextLookupStrategy =
                 Constraint.isNotNull(strategy, "RelyingPartyContext lookup strategy cannot be null");
     }
@@ -123,7 +121,7 @@ public class InitializeShibbolethSpAuthenticationContext extends AbstractAuthent
      * @param strategy lookup strategy
      */
     public void setAuthnRequestLookupStrategy(@Nonnull final Function<ProfileRequestContext, AuthnRequest> strategy) {
-        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        ifInitializedThrowUnmodifiabledComponentException();
         authnRequestLookupStrategy = Constraint.isNotNull(strategy, "AuthnRequest lookup strategy cannot be null");
     }
 
@@ -133,12 +131,11 @@ public class InitializeShibbolethSpAuthenticationContext extends AbstractAuthent
      * @param mappings The key refers to the relying party ID (entityID).
      */
     public void setAuthnContextMappings(@Nonnull final Map<String, Map<Principal, Principal>> mappings) {
-        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        ifInitializedThrowUnmodifiabledComponentException();
         authnContextMappings = mappings;
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext,
             @Nonnull final AuthenticationContext authenticationContext) {
@@ -175,7 +172,7 @@ public class InitializeShibbolethSpAuthenticationContext extends AbstractAuthent
     protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext,
             @Nonnull final AuthenticationContext authenticationContext) {
         final ShibbolethSpAuthenticationContext shibSpContext =
-                authenticationContext.getSubcontext(ShibbolethSpAuthenticationContext.class, true);
+                authenticationContext.ensureSubcontext(ShibbolethSpAuthenticationContext.class);
 
         final List<Principal> initialRequestedContext = new ArrayList<>();
         final List<Principal> mappedAuthnContext = new ArrayList<>();
@@ -208,7 +205,7 @@ public class InitializeShibbolethSpAuthenticationContext extends AbstractAuthent
     protected void mapAuthnContextClassRefs(final List<AuthnContextClassRef> contextClassRefs,
             final List<Principal> initialRequestedContext, final List<Principal> mappedAuthnContext) {
         for (final AuthnContextClassRef classRef : contextClassRefs) {
-            final String ctxClassRef = classRef.getAuthnContextClassRef();
+            final String ctxClassRef = classRef.getURI();
             final AuthnContextClassRefPrincipal principal = new AuthnContextClassRefPrincipal(ctxClassRef);
             mapPrincipal(principal, initialRequestedContext, mappedAuthnContext);
         }
@@ -225,7 +222,7 @@ public class InitializeShibbolethSpAuthenticationContext extends AbstractAuthent
     protected void mapAuthnContextDeclRefs(final List<AuthnContextDeclRef> contextDeclRefs,
             final List<Principal> initialRequestedContext, final List<Principal> mappedAuthnContext) {
         for (final AuthnContextDeclRef declRef : contextDeclRefs) {
-            final String ctxDeclRef = declRef.getAuthnContextDeclRef();
+            final String ctxDeclRef = declRef.getURI();
             final AuthnContextDeclRefPrincipal principal = new AuthnContextDeclRefPrincipal(ctxDeclRef);
             mapPrincipal(principal, initialRequestedContext, mappedAuthnContext);
         }

@@ -63,8 +63,8 @@ THE SOFTWARE.
     <dependencies>
         <!-- Compile Dependencies -->
         <dependency>
-            <groupId>net.shibboleth.idp</groupId>
-            <artifactId>idp-attribute-api</artifactId>
+            <groupId>net.shibboleth</groupId>
+            <artifactId>shib-attribute-api</artifactId>
         </dependency>
         <dependency>
             <groupId>net.shibboleth.idp</groupId>
@@ -79,10 +79,10 @@ THE SOFTWARE.
             <artifactId>idp-profile-api</artifactId>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-core</artifactId>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-profile-api</artifactId>

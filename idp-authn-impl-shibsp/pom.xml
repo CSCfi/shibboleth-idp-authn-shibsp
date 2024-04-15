@@ -67,8 +67,8 @@ THE SOFTWARE.
             <artifactId>idp-authn-api-shibsp</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.shibboleth.idp</groupId>
-            <artifactId>idp-attribute-api</artifactId>
+            <groupId>net.shibboleth</groupId>
+            <artifactId>shib-attribute-api</artifactId>
         </dependency>
         <dependency>
             <groupId>net.shibboleth.idp</groupId>
@@ -86,10 +86,10 @@ THE SOFTWARE.
             <groupId>net.shibboleth.idp</groupId>
             <artifactId>idp-saml-api</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-core</artifactId>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-profile-api</artifactId>
@@ -127,6 +127,11 @@ THE SOFTWARE.
             <artifactId>jakarta.json-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
         <!-- Runtime Dependencies -->
 
@@ -173,6 +178,21 @@ THE SOFTWARE.
 
         <dependency>
             <groupId>net.shibboleth.idp</groupId>
+            <artifactId>idp-testing</artifactId>
+            <version>${shib.idp.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.shibboleth.idp</groupId>
+            <artifactId>idp-saml-impl</artifactId>
+            <version>${shib.idp.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>net.shibboleth.idp</groupId>
             <artifactId>idp-authn-impl</artifactId>
             <scope>test</scope>
             <type>test-jar</type>
@@ -186,9 +206,8 @@ THE SOFTWARE.
 
         <dependency>
             <groupId>${opensaml.groupId}</groupId>
-            <artifactId>opensaml-core</artifactId>
+            <artifactId>opensaml-testing</artifactId>
             <scope>test</scope>
-            <type>test-jar</type>
         </dependency>
         
         <dependency>

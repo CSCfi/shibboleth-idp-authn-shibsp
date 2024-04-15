@@ -38,9 +38,8 @@ import net.shibboleth.idp.authn.AbstractValidationAction;
 import net.shibboleth.idp.authn.AuthnEventIds;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
 import net.shibboleth.idp.authn.principal.UsernamePrincipal;
-import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
-import net.shibboleth.utilities.java.support.component.ComponentSupport;
-import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.shared.annotation.constraint.NotEmpty;
+import net.shibboleth.shared.logic.Constraint;
 
 import org.opensaml.profile.action.ActionSupport;
 import org.opensaml.profile.action.EventIds;
@@ -115,7 +114,7 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
      * @param username The attribute name containing the user identifier.
      */
     public void setUsernameAttribute(String username) {
-        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        ifInitializedThrowUnmodifiabledComponentException();
         Constraint.isNotEmpty(username, "Username attribute cannot be null");
         usernameAttribute = username;
     }

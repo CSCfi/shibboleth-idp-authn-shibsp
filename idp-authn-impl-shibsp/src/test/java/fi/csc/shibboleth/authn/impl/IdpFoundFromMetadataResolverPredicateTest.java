@@ -33,9 +33,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import fi.csc.shibboleth.authn.context.ShibbolethSpAuthenticationContext;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
-import net.shibboleth.utilities.java.support.resolver.ResolverException;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.resolver.CriteriaSet;
+import net.shibboleth.shared.resolver.ResolverException;
 
 /**
  * Unit tests for {@link IdpFoundFromMetadataResolverPredicate}.
@@ -82,8 +82,10 @@ public class IdpFoundFromMetadataResolverPredicateTest
             }
         }
 
+        
+
         @Override
-        public Iterable<EntityDescriptor> resolve(CriteriaSet criteria) throws ResolverException {
+        public Iterable<EntityDescriptor> doResolve(CriteriaSet criteria) throws ResolverException {
             return Arrays.asList(entityDescriptor);
         }
     }
@@ -100,4 +102,6 @@ public class IdpFoundFromMetadataResolverPredicateTest
         }
 
     }
+
+
 }

@@ -26,7 +26,7 @@ THE SOFTWARE.
     <parent>
         <groupId>net.shibboleth.idp</groupId>
         <artifactId>idp-parent</artifactId>
-        <version>4.0.0</version>
+        <version>5.0.0</version>
     </parent>
     <groupId>fi.csc.shibboleth</groupId>
     <artifactId>idp-authn-shibsp</artifactId>
@@ -40,9 +40,9 @@ THE SOFTWARE.
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <shib.idp.version>4.0.0</shib.idp.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <shib.idp.version>5.0.0</shib.idp.version>
         <checkstyle.configLocation>checkstyle.xml</checkstyle.configLocation>
     </properties>
 
@@ -115,6 +115,11 @@ THE SOFTWARE.
             <dependency>
                 <groupId>net.shibboleth.idp</groupId>
                 <artifactId>idp-profile-api</artifactId>
+                <version>${shib.idp.version}</version>
+            </dependency>
+            <dependency>
+            <groupId>net.shibboleth.ext</groupId>
+                <artifactId>spring-extensions</artifactId>
                 <version>${shib.idp.version}</version>
             </dependency>
             <dependency>
@@ -354,6 +359,18 @@ THE SOFTWARE.
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>${automatic.module.name}</Automatic-Module-Name>
+                            <Sealed>false</Sealed>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+             </plugin>
         </plugins>
     </build>
     <reporting>

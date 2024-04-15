@@ -26,10 +26,11 @@ package fi.csc.shibboleth.authn.impl;
 import net.shibboleth.idp.authn.AuthnEventIds;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
 import net.shibboleth.idp.authn.context.ExternalAuthenticationContext;
-import net.shibboleth.idp.authn.impl.BaseAuthenticationContextTest;
+import net.shibboleth.idp.authn.impl.testing.BaseAuthenticationContextTest;
 import net.shibboleth.idp.authn.impl.ExternalAuthenticationImpl;
-import net.shibboleth.idp.profile.ActionTestingSupport;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.idp.profile.testing.ActionTestingSupport;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.primitive.NonnullSupplier;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -44,8 +45,8 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import fi.csc.shibboleth.authn.context.ShibbolethSpAuthenticationContext;
-import fi.csc.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest;
 import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Unit tests for {@link ExtractShibbolethAttributesFromRequest}.
@@ -76,9 +77,10 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
     /** The HTTP header. */
     private String expectedHeader;
     
-    /** {@inheritDoc} */
+    /** {@inheritDoc} 
+     * @throws ComponentInitializationException */
     @BeforeMethod
-    public void setUp() throws Exception {
+    public void setUp() throws ComponentInitializationException  {
         super.setUp();
     }
 
@@ -176,7 +178,15 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
 
     protected ShibbolethSpAuthenticationContext testSuccess(ExtractShibbolethAttributesFromRequest action, String prefix,
             int expectedAttributes) throws ComponentInitializationException {
-        action.setHttpServletRequest(new MockHttpServletRequest());
+        final MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        action.setHttpServletRequestSupplier(new NonnullSupplier<HttpServletRequest>() {
+
+            @Override
+            public MockHttpServletRequest get() {
+                return httpRequest;
+            }
+            
+        });
         ((MockHttpServletRequest) action.getHttpServletRequest())
             .addHeader(prefix + ShibbolethSpAuthenticationContext.SHIB_SP_AUTHENTICATION_INSTANT, expectedInstant);
         ((MockHttpServletRequest) action.getHttpServletRequest())
@@ -190,10 +200,10 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
         ((MockHttpServletRequest) action.getHttpServletRequest()).addHeader(expectedHeader, expectedHeader);
         ((MockHttpServletRequest) action.getHttpServletRequest()).setAttribute(expectedAttribute, expectedAttribute);
         action.initialize();
-        final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class);
         final Event event = action.execute(src);
         Assert.assertNull(event);
-        final ShibbolethSpAuthenticationContext shibCtx = authCtx.getSubcontext(ShibbolethSpAuthenticationContext.class, false);
+        final ShibbolethSpAuthenticationContext shibCtx = authCtx.getSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibCtx, "No shibboleth context attached");
         Assert.assertEquals(shibCtx.getIdp(), expectedIdp);
         Assert.assertEquals(shibCtx.getInstant(), expectedInstant);
@@ -224,7 +234,7 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
     @Test
     public void testExternalNoSubject() throws ComponentInitializationException {
         action = initAction(true);
-        final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class);
         authCtx.addSubcontext(new ExternalAuthenticationContext(new ExternalAuthenticationImpl(false)));
         final Event event = action.execute(src);
         ActionTestingSupport.assertEvent(event, AuthnEventIds.NO_CREDENTIALS);
@@ -237,7 +247,7 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
     @Test
     public void testExternalEmptySubject() throws ComponentInitializationException {
         action = initAction(true);
-        final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class);
         final ExternalAuthenticationContext extCtx = new ExternalAuthenticationContext(new ExternalAuthenticationImpl(false));
         extCtx.setSubject(new Subject());
         authCtx.addSubcontext(extCtx);
@@ -253,7 +263,7 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
     @Test
     public void testExternalSuccess() throws ComponentInitializationException {
         action = initAction(true);
-        final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext authCtx = prc.getSubcontext(AuthenticationContext.class);
         final ExternalAuthenticationContext extCtx = new ExternalAuthenticationContext(new ExternalAuthenticationImpl(false));
         final String headerName = "mockName";
         final String headerValue = "mockValue";
@@ -276,7 +286,15 @@ public class ExtractShibbolethAttributesFromRequestTest extends BaseAuthenticati
      */
     protected ExtractShibbolethAttributesFromRequest initAction(boolean exploitExternal) throws ComponentInitializationException {
         ExtractShibbolethAttributesFromRequest action = new ExtractShibbolethAttributesFromRequest();
-        action.setHttpServletRequest(new MockHttpServletRequest());
+        final MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        action.setHttpServletRequestSupplier(new NonnullSupplier<HttpServletRequest>() {
+
+            @Override
+            public MockHttpServletRequest get() {
+                return httpRequest;
+            }
+            
+        });
         action.setExploitExternal(true);
         action.initialize();
         return action;
