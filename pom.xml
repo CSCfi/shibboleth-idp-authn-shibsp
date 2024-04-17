@@ -30,7 +30,7 @@ THE SOFTWARE.
     </parent>
     <groupId>fi.csc.shibboleth</groupId>
     <artifactId>idp-authn-shibsp</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.0-rc1</version>
     <packaging>pom</packaging>
 
     <modules>

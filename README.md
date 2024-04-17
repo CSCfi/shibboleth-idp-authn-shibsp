@@ -1,18 +1,18 @@
-# Shibboleth IdP v4: Shibboleth SP authentication
+# Shibboleth IdP v5: Shibboleth SP authentication
 
 [![License](http://img.shields.io/:license-mit-blue.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.org/CSCfi/shibboleth-idp-authn-shibsp.svg?branch=master)](https://travis-ci.org/CSCfi/shibboleth-idp-authn-shibsp)
 
 ## Overview
 
-This module implements an authentication flow for [Shibboleth Identity Provider v4](https://wiki.shibboleth.net/confluence/display/IDP4/Home) exploiting attributes provided by [Shibboleth Service Provider](https://shibboleth.net/products/service-provider.html). The module can be used for outsourcing the authentication to another SAML IdP instead of prompting and validating the user
+This module implements an authentication flow for [Shibboleth Identity Provider v5](https://shibboleth.atlassian.net/wiki/spaces/IDP5/overview) exploiting attributes provided by [Shibboleth Service Provider](https://shibboleth.net/products/service-provider.html). The module can be used for outsourcing the authentication to another SAML IdP instead of prompting and validating the user
 credentials itself.
 
 NOTE! The IdP v4 natively supports [SAML authentication](https://wiki.shibboleth.net/confluence/display/IDP4/SAMLAuthnConfiguration), with many additional features compared to this plugin. The main purpose of this plugin is to serve in smooth transition to V4 for the existing IdP v3 deployments.
 
 ## Prerequisities and compilation
 
-- Java 11+
+- Java 17+
 - [Apache Maven 3](https://maven.apache.org/)
 
 ```
