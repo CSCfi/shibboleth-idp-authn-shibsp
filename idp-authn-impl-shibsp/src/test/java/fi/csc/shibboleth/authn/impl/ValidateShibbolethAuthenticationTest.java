@@ -39,6 +39,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import net.shibboleth.idp.authn.AuthnEventIds;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
 import net.shibboleth.idp.authn.impl.testing.BaseAuthenticationContextTest;
+import net.shibboleth.idp.authn.principal.IdPAttributePrincipal;
 import net.shibboleth.idp.authn.principal.UsernamePrincipal;
 import net.shibboleth.idp.profile.testing.ActionTestingSupport;
 import net.shibboleth.shared.component.ComponentInitializationException;
@@ -73,6 +74,7 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         Assert.assertEquals(action.getUsernameAttribute(), uidConfig);
         action.setPopulateAttributes(true);
         action.setPopulateHeaders(true);
+        action.setPopulateIdpAttributes(true);
         action.initialize();
     }
 
@@ -145,6 +147,27 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         final ShibAttributePrincipal principal = subject.getPrincipals(ShibAttributePrincipal.class).iterator().next();
         Assert.assertEquals(principal.getValue(), uidValue);
     }
+
+    /**
+     * Runs action with username in attribute map with.
+     * @param action Already initialized {@link ValidateShibbolethAuthentication} action.
+     */
+    public void testIdpAttribute(final ValidateShibbolethAuthentication action) {
+        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class);
+        ac.setAttemptedFlow(authenticationFlows.get(0));
+        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class)
+                .ensureSubcontext(ShibbolethSpAuthenticationContext.class);
+        Assert.assertNotNull(shibContext);
+        shibContext.getAttributes().put(uid, uidValue);
+        final Event event = action.execute(src);
+        ActionTestingSupport.assertProceedEvent(event);
+        Assert.assertNotNull(ac.getAuthenticationResult());
+        final Subject subject = ac.getAuthenticationResult().getSubject();
+        Assert.assertEquals(subject.getPrincipals(UsernamePrincipal.class).iterator().next().getName(), uidValue);   
+        Assert.assertEquals(subject.getPrincipals(ShibHeaderPrincipal.class).iterator().hasNext(), false); 
+        final IdPAttributePrincipal principal = subject.getPrincipals(IdPAttributePrincipal.class).iterator().next();
+        Assert.assertEquals(principal.getAttribute().getValues().get(0).getNativeValue(), uidValue);
+    }
     
     /**
      * Runs action with username in attribute map with multiple usernames in configuration.
@@ -165,7 +188,28 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         action.initialize();
         testAttribute(action);
     }
+
+    /**
+     * Runs action with username in attribute map with multiple usernames in configuration.
+     */
+    @Test public void testIdpAttribute() {
+        testIdpAttribute(action);
+    }
     
+    /**
+     * Runs action with username in attribute map with single username in configuration.
+     */
+    @Test public void testIdpAttributeSingle() throws Exception{
+        action = new ValidateShibbolethAuthentication();
+        action.setUsernameAttribute(uid);
+        Assert.assertEquals(action.getUsernameAttribute(), uid);
+        action.setPopulateAttributes(true);
+        action.setPopulateHeaders(true);
+        action.setPopulateIdpAttributes(true);
+        action.initialize();
+        testIdpAttribute(action);
+    }
+
     /**
      * Runs action with username in HTTP headers map.
      */

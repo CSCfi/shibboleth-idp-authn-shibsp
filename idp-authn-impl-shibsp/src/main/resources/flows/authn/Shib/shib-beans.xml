@@ -45,7 +45,7 @@ THE SOFTWARE.
             class="fi.csc.shibboleth.authn.impl.ValidateShibbolethAuthentication" scope="prototype"
             p:classifiedMessages-ref="shibboleth.authn.Shib.ClassifiedMessageMap"
             p:resultCachingPredicate="#{getObject('shibboleth.authn.Shib.resultCachingPredicate')}"
-            p:usernameAttribute="%{idp.authn.shibsp.usernameAttribute:eppn}" p:populateHeaders="%{idp.authn.shibsp.populateHeaders:true}" p:populateAttributes="%{idp.authn.shibsp.populateAttributes:true}" />
+            p:usernameAttribute="%{idp.authn.shibsp.usernameAttribute:eppn}" p:populateHeaders="%{idp.authn.shibsp.populateHeaders:true}" p:populateAttributes="%{idp.authn.shibsp.populateAttributes:true}" p:populateIdpAttributes="%{idp.authn.shibsp.populateIdpAttributes:true}"  />
 
     <bean id="ExtractShibbolethHeadersFromRequest" class="fi.csc.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest" scope="prototype"
         p:httpServletRequestSupplier-ref="shibboleth.HttpServletRequestSupplier"
