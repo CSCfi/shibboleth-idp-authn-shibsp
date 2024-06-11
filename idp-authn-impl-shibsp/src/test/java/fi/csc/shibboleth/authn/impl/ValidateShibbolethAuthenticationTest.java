@@ -158,15 +158,15 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class)
                 .ensureSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibContext);
-        shibContext.getAttributes().put(uid, uidValue);
+        shibContext.getHeaders().put(uid, uidValue);
         final Event event = action.execute(src);
         ActionTestingSupport.assertProceedEvent(event);
         Assert.assertNotNull(ac.getAuthenticationResult());
         final Subject subject = ac.getAuthenticationResult().getSubject();
         Assert.assertEquals(subject.getPrincipals(UsernamePrincipal.class).iterator().next().getName(), uidValue);   
-        Assert.assertEquals(subject.getPrincipals(ShibHeaderPrincipal.class).iterator().hasNext(), false); 
+        Assert.assertEquals(subject.getPrincipals(ShibAttributePrincipal.class).iterator().hasNext(), false);
         final IdPAttributePrincipal principal = subject.getPrincipals(IdPAttributePrincipal.class).iterator().next();
-        Assert.assertEquals(principal.getAttribute().getValues().get(0).getNativeValue(), uidValue);
+        Assert.assertEquals(principal.getAttribute().getValues().get(0).getNativeValue().toString(), uidValue);
     }
     
     /**

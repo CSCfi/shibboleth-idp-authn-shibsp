@@ -276,7 +276,7 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
      * @return The set containing all HTTP headers.
      */
     protected Set<Principal> populateIdpAttributePrincipals() {
-        return populatePrincipals(shibbolethContext.getAttributes());
+        return populatePrincipals(shibbolethContext.getHeaders());
     }
     
     /**
@@ -313,6 +313,7 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
             final String key = iterator.next();
             IdPAttribute idPAttribute = new IdPAttribute(key);
             idPAttribute.setValues(List.of(new StringAttributeValue(map.get(key))));
+            log.trace("Adding idpAttribute principal {} to the set", key);
             set.add(new IdPAttributePrincipal(idPAttribute));
         }
         return set;
