@@ -29,8 +29,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
-import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipalSerializer;
 import net.shibboleth.idp.authn.principal.UsernamePrincipal;
 
 /**

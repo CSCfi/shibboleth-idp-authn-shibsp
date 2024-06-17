@@ -24,7 +24,7 @@ package fi.csc.shibboleth.authn.principal.impl;
 
 import javax.annotation.Nonnull;
 
-import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
+import net.shibboleth.shared.annotation.constraint.NotEmpty;
 
 /**
  * This class is designed to carry request attribute key and value -pairs inside {@link Principal}.

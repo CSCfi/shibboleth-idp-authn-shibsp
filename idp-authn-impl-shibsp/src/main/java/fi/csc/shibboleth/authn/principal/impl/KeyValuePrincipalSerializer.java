@@ -30,20 +30,19 @@ import java.security.Principal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonString;
-import javax.json.JsonStructure;
-import javax.json.stream.JsonGenerator;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonString;
+import jakarta.json.JsonStructure;
+import jakarta.json.stream.JsonGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
-import fi.csc.shibboleth.authn.principal.impl.KeyValuePrincipal;
 import net.shibboleth.idp.authn.principal.AbstractPrincipalSerializer;
-import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
+import net.shibboleth.shared.annotation.constraint.NotEmpty;
 
 /**
  * Base serializer for {@link KeyValuePrincipal}. Based on {@link GenericPrincipalSerializer}.

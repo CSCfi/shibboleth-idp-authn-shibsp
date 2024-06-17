@@ -45,10 +45,10 @@ THE SOFTWARE.
             class="fi.csc.shibboleth.authn.impl.ValidateShibbolethAuthentication" scope="prototype"
             p:classifiedMessages-ref="shibboleth.authn.Shib.ClassifiedMessageMap"
             p:resultCachingPredicate="#{getObject('shibboleth.authn.Shib.resultCachingPredicate')}"
-            p:usernameAttribute="%{idp.authn.shibsp.usernameAttribute:eppn}" p:populateHeaders="%{idp.authn.shibsp.populateHeaders:true}" p:populateAttributes="%{idp.authn.shibsp.populateAttributes:true}" />
+            p:usernameAttribute="%{idp.authn.shibsp.usernameAttribute:eppn}" p:populateHeaders="%{idp.authn.shibsp.populateHeaders:true}" p:populateAttributes="%{idp.authn.shibsp.populateAttributes:true}" p:populateIdpAttributes="%{idp.authn.shibsp.populateIdpAttributes:true}"  />
 
     <bean id="ExtractShibbolethHeadersFromRequest" class="fi.csc.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest" scope="prototype"
-        p:httpServletRequest-ref="shibboleth.HttpServletRequest"
+        p:httpServletRequestSupplier-ref="shibboleth.HttpServletRequestSupplier"
         p:trim="true" p:attributeNames-ref="attributeNames">
        <constructor-arg type="String" value="AJP_"/>
     </bean>
@@ -58,7 +58,7 @@ THE SOFTWARE.
     </util:list>
 
     <bean id="ExtractShibbolethPrincipals" class="fi.csc.shibboleth.authn.impl.ExtractShibbolethAttributesFromRequest" scope="prototype"
-        p:httpServletRequest-ref="shibboleth.HttpServletRequest"
+        p:httpServletRequestSupplier-ref="shibboleth.HttpServletRequestSupplier"
         p:trim="true" p:exploitExternal="true">
        <constructor-arg type="String" value="AJP_"/>
     </bean>

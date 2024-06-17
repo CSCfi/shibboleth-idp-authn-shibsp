@@ -1,18 +1,18 @@
-# Shibboleth IdP v4: Shibboleth SP authentication
+# Shibboleth IdP v5: Shibboleth SP authentication
 
 [![License](http://img.shields.io/:license-mit-blue.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.org/CSCfi/shibboleth-idp-authn-shibsp.svg?branch=master)](https://travis-ci.org/CSCfi/shibboleth-idp-authn-shibsp)
 
 ## Overview
 
-This module implements an authentication flow for [Shibboleth Identity Provider v4](https://wiki.shibboleth.net/confluence/display/IDP4/Home) exploiting attributes provided by [Shibboleth Service Provider](https://shibboleth.net/products/service-provider.html). The module can be used for outsourcing the authentication to another SAML IdP instead of prompting and validating the user
+This module implements an authentication flow for [Shibboleth Identity Provider v5](https://shibboleth.atlassian.net/wiki/spaces/IDP5/overview) exploiting attributes provided by [Shibboleth Service Provider](https://shibboleth.net/products/service-provider.html). The module can be used for outsourcing the authentication to another SAML IdP instead of prompting and validating the user
 credentials itself.
 
-NOTE! The IdP v4 natively supports [SAML authentication](https://wiki.shibboleth.net/confluence/display/IDP4/SAMLAuthnConfiguration), with many additional features compared to this plugin. The main purpose of this plugin is to serve in smooth transition to V4 for the existing IdP v3 deployments.
+NOTE! The IdP v5 natively supports [SAML authentication](https://wiki.shibboleth.net/confluence/display/IDP4/SAMLAuthnConfiguration), with many additional features compared to this plugin. The main purpose of this plugin is to serve in smooth transition to V4 for the existing IdP v3 deployments.
 
 ## Prerequisities and compilation
 
-- Java 11+
+- Java 17+
 - [Apache Maven 3](https://maven.apache.org/)
 
 ```
@@ -142,7 +142,7 @@ The flow definition must also be enabled via _idp.authn.flows_ variable in _/opt
 
 The attributes provided by Shibboleth SP can be converted into IdP attributes in the following way:
 
-### 1. Enable attribute and/or header population into Subject
+### 1. Enable attribute idPAttribute and/or header population into Subject
 
 In the _/opt/shibboleth-idp/flows/authn/Shib/shib-beans.xml_, enable _populateAttributes_ and/or _populateHeaders_ settings for the bean _ValidateShibbolethAuthentication_.
 
@@ -153,7 +153,8 @@ The example above enables population of both attributes and headers:
             class="fi.csc.shibboleth.authn.impl.ValidateShibbolethAuthentication" scope="prototype"
             p:classifiedMessages-ref="shibboleth.authn.Shib.ClassifiedMessageMap"
             p:resultCachingPredicate="#{getObject('shibboleth.authn.Shib.resultCachingPredicate')}"
-            p:usernameAttribute="eppn" p:populateHeaders="true" p:populateAttributes="true" />
+            p:usernameAttribute="eppn" p:populateHeaders="true" p:populateAttributes="true"
+            p:populateIdpAttributes="true" />
 ```
 
 ### 2. Enable principal serializers

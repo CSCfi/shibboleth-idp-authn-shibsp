@@ -48,12 +48,12 @@ import org.testng.annotations.Test;
 import fi.csc.shibboleth.authn.context.ShibbolethSpAuthenticationContext;
 import fi.csc.shibboleth.authn.impl.InitializeShibbolethSpAuthenticationContext;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
-import net.shibboleth.idp.authn.impl.BaseAuthenticationContextTest;
-import net.shibboleth.idp.profile.context.RelyingPartyContext;
+import net.shibboleth.idp.authn.impl.testing.BaseAuthenticationContextTest;
+import net.shibboleth.profile.context.RelyingPartyContext;
 import net.shibboleth.idp.saml.authn.principal.AuthnContextClassRefPrincipal;
 import net.shibboleth.idp.saml.authn.principal.AuthnContextDeclRefPrincipal;
-import net.shibboleth.idp.saml.saml2.profile.SAML2ActionTestingSupport;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.idp.saml.saml2.profile.impl.SAML2ActionTestingSupport;
+import net.shibboleth.shared.component.ComponentInitializationException;
 
 /**
  * Unit tests for {@link InitializeShibbolethSpAuthenticationContext}.
@@ -75,11 +75,16 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
     /** The mapped context declaration reference. */
     private String mappedCtxDecl1;
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc} 
+     * @throws ComponentInitializationException */
     @BeforeMethod
-    public void setUp() throws Exception {
+    public void setUp() throws ComponentInitializationException  {
         super.setUp();
-        InitializationService.initialize();
+        try {
+            InitializationService.initialize();
+        } catch (InitializationException e) {
+            Assert.fail();
+        }
     }
 
     /**
@@ -137,7 +142,7 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
         action.initialize();
         Assert.assertNull(action.execute(src));
         final ShibbolethSpAuthenticationContext shibSpCtx = prc.getSubcontext(AuthenticationContext.class)
-                .getSubcontext(ShibbolethSpAuthenticationContext.class, false);
+                .getSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibSpCtx);
         Assert.assertEquals(shibSpCtx.getInitialRequestedContext().size(), 0);
         Assert.assertEquals(shibSpCtx.getMappedAuthnContext().size(), 0);
@@ -162,7 +167,7 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
         action.initialize();
         Assert.assertNull(action.execute(src));
         final ShibbolethSpAuthenticationContext shibSpCtx = prc.getSubcontext(AuthenticationContext.class)
-                .getSubcontext(ShibbolethSpAuthenticationContext.class, false);
+                .getSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibSpCtx);
         Assert.assertEquals(shibSpCtx.getInitialRequestedContext().size(), 0);
         final List<Principal> mappedAuthnCtx = shibSpCtx.getMappedAuthnContext();
@@ -191,7 +196,7 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
         action.initialize();
         Assert.assertNull(action.execute(src));
         final ShibbolethSpAuthenticationContext shibSpCtx = prc.getSubcontext(AuthenticationContext.class)
-                .getSubcontext(ShibbolethSpAuthenticationContext.class, false);
+                .getSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibSpCtx);
         final List<Principal> initialRequestedCtx = shibSpCtx.getInitialRequestedContext();
         Assert.assertEquals(initialRequestedCtx.size(), 2);
@@ -228,7 +233,7 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
         action.initialize();
         Assert.assertNull(action.execute(src));
         final ShibbolethSpAuthenticationContext shibSpCtx = prc.getSubcontext(AuthenticationContext.class)
-                .getSubcontext(ShibbolethSpAuthenticationContext.class, false);
+                .getSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibSpCtx);
         final List<Principal> initialRequestedCtx = shibSpCtx.getInitialRequestedContext();
         Assert.assertEquals(initialRequestedCtx.size(), 2);
@@ -247,7 +252,7 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
     protected static RequestedAuthnContext buildRequestedAuthnContext() {
         final SAMLObjectBuilder<RequestedAuthnContext> requestedBuilder =
                 (SAMLObjectBuilder<RequestedAuthnContext>) XMLObjectProviderRegistrySupport.getBuilderFactory()
-                        .<RequestedAuthnContext> getBuilderOrThrow(RequestedAuthnContext.DEFAULT_ELEMENT_NAME);
+                        .<RequestedAuthnContext> ensureBuilder(RequestedAuthnContext.DEFAULT_ELEMENT_NAME);
         return requestedBuilder.buildObject();
     }
 
@@ -259,9 +264,9 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
     protected static AuthnContextClassRef buildContextClassRef(final String value) {
         final SAMLObjectBuilder<AuthnContextClassRef> classRefBuilder =
                 (SAMLObjectBuilder<AuthnContextClassRef>) XMLObjectProviderRegistrySupport.getBuilderFactory()
-                        .<AuthnContextClassRef> getBuilderOrThrow(AuthnContextClassRef.DEFAULT_ELEMENT_NAME);
+                        .<AuthnContextClassRef> ensureBuilder(AuthnContextClassRef.DEFAULT_ELEMENT_NAME);
         final AuthnContextClassRef classRef = classRefBuilder.buildObject();
-        classRef.setAuthnContextClassRef(value);
+        classRef.setURI(value);
         return classRef;
     }
 
@@ -273,9 +278,9 @@ public class InitializeShibbolethSpAuthenticationContextTest extends BaseAuthent
     protected static AuthnContextDeclRef buildContextDeclRef(final String value) {
         final SAMLObjectBuilder<AuthnContextDeclRef> declRefBuilder =
                 (SAMLObjectBuilder<AuthnContextDeclRef>) XMLObjectProviderRegistrySupport.getBuilderFactory()
-                        .<AuthnContextDeclRef> getBuilderOrThrow(AuthnContextDeclRef.DEFAULT_ELEMENT_NAME);
+                        .<AuthnContextDeclRef> ensureBuilder(AuthnContextDeclRef.DEFAULT_ELEMENT_NAME);
         final AuthnContextDeclRef declRef = declRefBuilder.buildObject();
-        declRef.setAuthnContextDeclRef(value);
+        declRef.setURI(value);
         return declRef;
     }
 }

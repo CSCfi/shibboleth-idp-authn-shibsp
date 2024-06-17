@@ -29,8 +29,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import fi.csc.shibboleth.authn.principal.impl.KeyValuePrincipal;
-import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
+import net.shibboleth.shared.logic.ConstraintViolationException;
 
 /**
  * Unit tests for classes extending {@link KeyValuePrincipal}.

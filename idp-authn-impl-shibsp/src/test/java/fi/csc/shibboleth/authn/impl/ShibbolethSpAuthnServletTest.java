@@ -31,12 +31,11 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import fi.csc.shibboleth.authn.impl.ShibbolethSpAuthnServlet;
 import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
 import net.shibboleth.idp.authn.ExternalAuthentication;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
 import net.shibboleth.idp.authn.context.ExternalAuthenticationContext;
-import net.shibboleth.idp.authn.impl.BaseAuthenticationContextTest;
+import net.shibboleth.idp.authn.impl.testing.BaseAuthenticationContextTest;
 import net.shibboleth.idp.authn.impl.ExternalAuthenticationImpl;
 import net.shibboleth.idp.authn.principal.UsernamePrincipal;
 
@@ -61,7 +60,7 @@ public class ShibbolethSpAuthnServletTest extends BaseAuthenticationContextTest 
         servlet.init(new MockServletConfig());
         conversationKey = "mockKey";
         flowExecutionUrl = "http://localhost/mock";
-        final AuthenticationContext authnContext = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext authnContext = prc.getSubcontext(AuthenticationContext.class);
         authnContext.setAttemptedFlow(authenticationFlows.get(0));
         final ExternalAuthenticationContext extContext = new ExternalAuthenticationContext(new ExternalAuthenticationImpl(false));
         extContext.setFlowExecutionUrl(flowExecutionUrl);
@@ -75,8 +74,8 @@ public class ShibbolethSpAuthnServletTest extends BaseAuthenticationContextTest 
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         servlet.doGet(servletRequest, servletResponse);
         Assert.assertNull(servletResponse.getRedirectedUrl());
-        final AuthenticationContext authnContext = prc.getSubcontext(AuthenticationContext.class, false);
-        final ExternalAuthenticationContext extContext = authnContext.getSubcontext(ExternalAuthenticationContext.class, true);
+        final AuthenticationContext authnContext = prc.getSubcontext(AuthenticationContext.class);
+        final ExternalAuthenticationContext extContext = authnContext.ensureSubcontext(ExternalAuthenticationContext.class);
         Assert.assertNull(extContext.getSubject());
     }
     
@@ -114,8 +113,8 @@ public class ShibbolethSpAuthnServletTest extends BaseAuthenticationContextTest 
     }
     
     protected void assertExternalContext(final String shibName, final String shibValue, final String username) {
-        final AuthenticationContext authnContext = prc.getSubcontext(AuthenticationContext.class, false);
-        final ExternalAuthenticationContext extContext = authnContext.getSubcontext(ExternalAuthenticationContext.class, true);
+        final AuthenticationContext authnContext = prc.getSubcontext(AuthenticationContext.class);
+        final ExternalAuthenticationContext extContext = authnContext.ensureSubcontext(ExternalAuthenticationContext.class);
         Assert.assertNotNull(extContext.getSubject());
         if (shibName == null) {
             Assert.assertEquals(extContext.getSubject().getPrincipals(ShibHeaderPrincipal.class).size(), 0);

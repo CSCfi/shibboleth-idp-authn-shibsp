@@ -28,8 +28,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 
-import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
-import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
+import net.shibboleth.shared.annotation.constraint.NotEmpty;
 
 /**
  * Serializer for {@link ShibHeaderPrincipal}.

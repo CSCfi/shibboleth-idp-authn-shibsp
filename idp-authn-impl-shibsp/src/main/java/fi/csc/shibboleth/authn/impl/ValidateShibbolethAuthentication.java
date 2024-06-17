@@ -25,6 +25,7 @@ package fi.csc.shibboleth.authn.impl;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -34,13 +35,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.security.auth.Subject;
 
+import net.shibboleth.idp.attribute.IdPAttribute;
+import net.shibboleth.idp.attribute.StringAttributeValue;
 import net.shibboleth.idp.authn.AbstractValidationAction;
 import net.shibboleth.idp.authn.AuthnEventIds;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
+import net.shibboleth.idp.authn.principal.IdPAttributePrincipal;
 import net.shibboleth.idp.authn.principal.UsernamePrincipal;
-import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
-import net.shibboleth.utilities.java.support.component.ComponentSupport;
-import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.shared.annotation.constraint.NotEmpty;
+import net.shibboleth.shared.logic.Constraint;
 
 import org.opensaml.profile.action.ActionSupport;
 import org.opensaml.profile.action.EventIds;
@@ -90,6 +93,9 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
     
     /** Switch to populate Subject with header principals. */
     private boolean populateHeaders;
+
+    /** Switch to populate Subject with idp attribute principals. */
+    private boolean populateIdpAttributes;
     
     /** Whether the authentication result is acceptable by external evaluation, usually a script. */
     @Nonnull
@@ -115,7 +121,7 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
      * @param username The attribute name containing the user identifier.
      */
     public void setUsernameAttribute(String username) {
-        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        ifInitializedThrowUnmodifiabledComponentException();
         Constraint.isNotEmpty(username, "Username attribute cannot be null");
         usernameAttribute = username;
     }
@@ -135,6 +141,15 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
     
     public void setPopulateHeaders(boolean headers) {
         populateHeaders = headers;
+    }
+
+    /**
+     * Set switch to populate Subject with idp attribute principals.
+     * @param idpAttributes true to populate them, false otherwise.
+     */
+    
+     public void setPopulateIdpAttributes(boolean idpAttributes) {
+        populateIdpAttributes = idpAttributes;
     }
     
     /**
@@ -235,6 +250,10 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
             log.debug("{} Populating the headers principals into the subject", getLogPrefix());
             subject.getPrincipals().addAll(populateHeaderPrincipals());
         }
+        if (populateIdpAttributes) {
+            log.debug("{} Populating the idp attribute principals into the subject", getLogPrefix());
+            subject.getPrincipals().addAll(populateIdpAttributePrincipals());
+        }
         return subject;
     }
     
@@ -251,6 +270,13 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
      */
     protected Set<Principal> populateHeaderPrincipals() {
         return populatePrincipals(shibbolethContext.getHeaders(), true);
+    }
+
+    /** Populates all idp attributes to a set of {@link IdPAttributePrincipal}s.
+     * @return The set containing all HTTP headers.
+     */
+    protected Set<Principal> populateIdpAttributePrincipals() {
+        return populatePrincipals(shibbolethContext.getHeaders());
     }
     
     /**
@@ -271,6 +297,24 @@ public class ValidateShibbolethAuthentication extends AbstractValidationAction {
                 log.trace("Adding attribute principal {} to the set", key);
                 set.add(new ShibAttributePrincipal(key, map.get(key)));
             }
+        }
+        return set;
+    }
+
+    /**
+     * Populate all map entries to a set of {@link IdPAttributePrincipal}s.
+     * @param map The map containing entries to be populated.
+     * @return The set containing all the entries from the given map.
+     */
+    protected Set<Principal> populatePrincipals(Map<String, String> map) {
+        final Set<Principal> set = new HashSet<Principal>();
+        final Iterator<String> iterator = map.keySet().iterator();
+        while (iterator.hasNext()) {
+            final String key = iterator.next();
+            IdPAttribute idPAttribute = new IdPAttribute(key);
+            idPAttribute.setValues(List.of(new StringAttributeValue(map.get(key))));
+            log.trace("Adding idpAttribute principal {} to the set", key);
+            set.add(new IdPAttributePrincipal(idPAttribute));
         }
         return set;
     }

@@ -35,12 +35,15 @@ import com.google.common.base.Predicates;
 import fi.csc.shibboleth.authn.context.ShibbolethSpAuthenticationContext;
 import fi.csc.shibboleth.authn.principal.impl.ShibAttributePrincipal;
 import fi.csc.shibboleth.authn.principal.impl.ShibHeaderPrincipal;
+import jakarta.servlet.http.HttpServletRequest;
 import net.shibboleth.idp.authn.AuthnEventIds;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
-import net.shibboleth.idp.authn.impl.BaseAuthenticationContextTest;
+import net.shibboleth.idp.authn.impl.testing.BaseAuthenticationContextTest;
+import net.shibboleth.idp.authn.principal.IdPAttributePrincipal;
 import net.shibboleth.idp.authn.principal.UsernamePrincipal;
-import net.shibboleth.idp.profile.ActionTestingSupport;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.idp.profile.testing.ActionTestingSupport;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.primitive.NonnullSupplier;
 
 /**
  * Unit tests for {@link ValidateShibbolethAuthentication}.
@@ -59,8 +62,9 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
     /** The value of the username. */
     private String uidValue;
     
-    /** {@inheritDoc} */
-    @BeforeMethod public void setUp() throws Exception {
+    /** {@inheritDoc} 
+     * @throws ComponentInitializationException */
+    @BeforeMethod public void setUp() throws ComponentInitializationException  {
         super.setUp();
         uidConfig = "username,username2";
         uid = "username";
@@ -70,6 +74,7 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         Assert.assertEquals(action.getUsernameAttribute(), uidConfig);
         action.setPopulateAttributes(true);
         action.setPopulateHeaders(true);
+        action.setPopulateIdpAttributes(true);
         action.initialize();
     }
 
@@ -85,7 +90,7 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
      * Runs action without {@link ShibbolethSpAuthenticationContext}.
      */
     @Test public void testMissingContext() {
-        prc.getSubcontext(AuthenticationContext.class, false).setAttemptedFlow(authenticationFlows.get(0));
+        prc.getSubcontext(AuthenticationContext.class).setAttemptedFlow(authenticationFlows.get(0));
         final Event event = action.execute(src);
         ActionTestingSupport.assertEvent(event, AuthnEventIds.INVALID_AUTHN_CTX);
     }
@@ -94,9 +99,9 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
      * Runs action without username attribute.
      */
     @Test public void testMissingUser() {
-        prc.getSubcontext(AuthenticationContext.class, false).setAttemptedFlow(authenticationFlows.get(0));
-        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class, false)
-                .getSubcontext(ShibbolethSpAuthenticationContext.class, true);
+        prc.getSubcontext(AuthenticationContext.class).setAttemptedFlow(authenticationFlows.get(0));
+        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class)
+                .ensureSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibContext);
         final Event event = action.execute(src);
         ActionTestingSupport.assertEvent(event, AuthnEventIds.NO_CREDENTIALS);
@@ -112,10 +117,10 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         action.setPopulateHeaders(true);
         action.setAuthenticationAcceptablePredicate(Predicates.alwaysFalse());
         action.initialize();
-        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class);
         ac.setAttemptedFlow(authenticationFlows.get(0));
-        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class, false)
-                .getSubcontext(ShibbolethSpAuthenticationContext.class, true);
+        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class)
+                .ensureSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibContext);
         shibContext.getAttributes().put(uid, uidValue);
         final Event event = action.execute(src);
@@ -127,10 +132,10 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
      * @param action Already initialized {@link ValidateShibbolethAuthentication} action.
      */
     public void testAttribute(final ValidateShibbolethAuthentication action) {
-        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class);
         ac.setAttemptedFlow(authenticationFlows.get(0));
-        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class, false)
-                .getSubcontext(ShibbolethSpAuthenticationContext.class, true);
+        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class)
+                .ensureSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibContext);
         shibContext.getAttributes().put(uid, uidValue);
         final Event event = action.execute(src);
@@ -141,6 +146,27 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         Assert.assertEquals(subject.getPrincipals(ShibHeaderPrincipal.class).iterator().hasNext(), false);
         final ShibAttributePrincipal principal = subject.getPrincipals(ShibAttributePrincipal.class).iterator().next();
         Assert.assertEquals(principal.getValue(), uidValue);
+    }
+
+    /**
+     * Runs action with username in attribute map with.
+     * @param action Already initialized {@link ValidateShibbolethAuthentication} action.
+     */
+    public void testIdpAttribute(final ValidateShibbolethAuthentication action) {
+        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class);
+        ac.setAttemptedFlow(authenticationFlows.get(0));
+        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class)
+                .ensureSubcontext(ShibbolethSpAuthenticationContext.class);
+        Assert.assertNotNull(shibContext);
+        shibContext.getHeaders().put(uid, uidValue);
+        final Event event = action.execute(src);
+        ActionTestingSupport.assertProceedEvent(event);
+        Assert.assertNotNull(ac.getAuthenticationResult());
+        final Subject subject = ac.getAuthenticationResult().getSubject();
+        Assert.assertEquals(subject.getPrincipals(UsernamePrincipal.class).iterator().next().getName(), uidValue);   
+        Assert.assertEquals(subject.getPrincipals(ShibAttributePrincipal.class).iterator().hasNext(), false);
+        final IdPAttributePrincipal principal = subject.getPrincipals(IdPAttributePrincipal.class).iterator().next();
+        Assert.assertEquals(principal.getAttribute().getValues().get(0).getNativeValue().toString(), uidValue);
     }
     
     /**
@@ -162,15 +188,36 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
         action.initialize();
         testAttribute(action);
     }
+
+    /**
+     * Runs action with username in attribute map with multiple usernames in configuration.
+     */
+    @Test public void testIdpAttribute() {
+        testIdpAttribute(action);
+    }
     
+    /**
+     * Runs action with username in attribute map with single username in configuration.
+     */
+    @Test public void testIdpAttributeSingle() throws Exception{
+        action = new ValidateShibbolethAuthentication();
+        action.setUsernameAttribute(uid);
+        Assert.assertEquals(action.getUsernameAttribute(), uid);
+        action.setPopulateAttributes(true);
+        action.setPopulateHeaders(true);
+        action.setPopulateIdpAttributes(true);
+        action.initialize();
+        testIdpAttribute(action);
+    }
+
     /**
      * Runs action with username in HTTP headers map.
      */
     @Test public void testHeader() {
-        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class);
         ac.setAttemptedFlow(authenticationFlows.get(0));
-        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class, false)
-                .getSubcontext(ShibbolethSpAuthenticationContext.class, true);
+        final ShibbolethSpAuthenticationContext shibContext = prc.getSubcontext(AuthenticationContext.class)
+                .ensureSubcontext(ShibbolethSpAuthenticationContext.class);
         Assert.assertNotNull(shibContext);
         shibContext.getHeaders().put(uid, uidValue);
         final Event event = action.execute(src);
@@ -192,12 +239,20 @@ public class ValidateShibbolethAuthenticationTest extends BaseAuthenticationCont
     @Test public void testCombinedUsernameResolution() throws ComponentInitializationException {
         final String prefix = "AJP_";
         final ExtractShibbolethAttributesFromRequest action1 = new ExtractShibbolethAttributesFromRequest(prefix);
-        action1.setHttpServletRequest(new MockHttpServletRequest());
+        final MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        action1.setHttpServletRequestSupplier(new NonnullSupplier<HttpServletRequest>() {
+
+            @Override
+            public MockHttpServletRequest get() {
+                return httpRequest;
+            }
+            
+        });
         ((MockHttpServletRequest) action1.getHttpServletRequest()).addHeader(prefix + uid, uidValue);
         action1.initialize();
         final Event event = action1.execute(src);
         Assert.assertNull(event);
-        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class, false);
+        final AuthenticationContext ac = prc.getSubcontext(AuthenticationContext.class);
         ac.setAttemptedFlow(authenticationFlows.get(0));
         final Event event2 = action.execute(src);
         Assert.assertNull(event2);

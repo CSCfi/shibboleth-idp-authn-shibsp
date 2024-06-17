@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import fi.csc.shibboleth.authn.context.ShibbolethSpAuthenticationContext;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
-import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.shared.logic.Constraint;
 
 /**
  * An abstract class for {@link Predicate}s dealing with {@link ShibbolethSpAuthenticationContext}.
